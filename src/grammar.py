@@ -17,9 +17,7 @@ class Grammar:
     )
 
     identifiers = []
-
     vars = {}
-
     consts = {}
 
     def p_body(self, p):

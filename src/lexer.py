@@ -30,6 +30,7 @@ class Lexer:
     t_ignore = " \t"
 
     def __init__(self, **kwargs):
+        self.file_mode = kwargs.pop("file_mode", False)
         self.lexer = lex.lex(module=self, **kwargs)
 
     @lex.TOKEN(r"[a-zA-Z_][a-zA-Z_0-9]*")
@@ -82,12 +83,15 @@ class Lexer:
         t.lexer.lineno += t.value.count("\n")
 
     def t_eof(self, t):
-        more = input("... ")
-        if more:
-            t.lexer.input(more + "\n")
-            return t.lexer.token()
-        else:
+        if self.file_mode:
             return None
+        else:
+            more = input("... ")
+            if more:
+                t.lexer.input(more + "\n")
+                return t.lexer.token()
+            else:
+                return None
 
     def t_error(self, t):
         print("Illegal character '%s'" % t.value[0])

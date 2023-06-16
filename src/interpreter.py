@@ -1,11 +1,13 @@
 from lexer import Lexer
 from grammar import Grammar
 from node import Node
+import argparse
 
 
 class Interpreter:
     def __init__(self, **kwargs):
-        self.lexer = Lexer(**kwargs)
+        file_mode = kwargs.pop("file_mode", False)
+        self.lexer = Lexer(file_mode=file_mode, **kwargs)
         self.parser = Grammar(self.lexer, **kwargs)
 
     def run(self):
@@ -158,8 +160,21 @@ class Interpreter:
 
 
 def main():
-    interpreter = Interpreter()
-    interpreter.run()
+    parser = argparse.ArgumentParser(description="Calculator using ply-lex,yacc.")
+    parser.add_argument(
+        "-f", "--file", help="The path to the source code file.", default=None
+    )
+
+    args = parser.parse_args()
+
+    if args.file:
+        with open(args.file, "r") as f:
+            interpreter = Interpreter(file_mode=True)
+            for line in f:
+                interpreter._build_ast(line)
+    else:
+        interpreter = Interpreter()
+        interpreter.run()
 
 
 if __name__ == "__main__":
